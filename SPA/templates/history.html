@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>History</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/sources/history.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='history.css') }}">
+    <style>
+        body {
+            scroll-behavior: smooth; /* Add this line for smooth scrolling */
+        }
+    </style>
+</head>
+<body>
+<h1>User History for {{ username }}</h1>
+<table>
+    <tr>
+        <th>Equation</th>
+        <th>Solution</th>
+        <th>Method</th>
+    </tr>
+    {% for entry in history %}
+    <tr>
+        <td>{{ entry[0] }}</td>
+        <td>{{ entry[1] }}</td>
+        <td>{{ entry[2] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('index') }}">Back to Home</a>
+
+<script>
+    var isScrolling = false;
+
+    document.addEventListener('click', function() {
+        toggleScroll();
+    });
+
+    function toggleScroll() {
+        if (isScrolling) {
+            isScrolling = false;
+        } else {
+            scrollToTopOrBottom();
+        }
+    }
+
+    function scrollToTopOrBottom() {
+        // Get the current scroll position
+        var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+
+        // Determine whether to scroll to the top or bottom
+        var scrollTo = (currentScroll === 0) ? document.body.scrollHeight : 0;
+
+        // Smoothly scroll to the target position
+        smoothScroll(scrollTo);
+    }
+
+    function smoothScroll(target) {
+        var duration = 1000; // Adjust the duration (in milliseconds) to control the speed
+        var start = window.pageYOffset;
+        var startTime = 'now' in window.performance ? performance.now() : new Date().getTime();
+
+        function scroll() {
+            var now = 'now' in window.performance ? performance.now() : new Date().getTime();
+            var elapsed = now - startTime;
+
+            window.scroll(0, easeInOutQuad(elapsed, start, target - start, duration));
+
+            if (elapsed < duration && isScrolling) {
+                requestAnimationFrame(scroll);
+            } else {
+                isScrolling = false; // Reset the scrolling flag
+            }
+        }
+
+        isScrolling = true;
+        requestAnimationFrame(scroll);
+    }
+
+    function easeInOutQuad(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+    }
+</script>
+</body>
+</html>

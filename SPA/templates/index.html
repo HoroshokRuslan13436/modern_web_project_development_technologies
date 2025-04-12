@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root Finding Methods</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png" href="{{  url_for('static', filename='/sources/calculator.png') }}">
+</head>
+<body>
+<div class="scroll-to-bottom-container">
+    <h1>Root Finding Methods</h1>
+    <button id="button_click" onclick="scrollToBottom()">▲</button>
+
+    <p id="userEmailDisplay"></p>
+
+    <button onclick="removeEmail()">Log Out</button>
+</div>
+
+<div class="container">
+    <div class="form-container">
+        <form method="POST" action="/Root_Finding_Methods">
+            <label for="equation">Equation:</label>
+            <input type="text" id="equation" name="equation" required value="x^3 + 2*x^2+2">
+            <br><br>
+            <label for="initial">Initial Guess:</label>
+            <input type="text" id="initial" name="initial" value="1">
+            <br><br>
+            <label for="tolerance">Tolerance:</label>
+            <input type="text" id="tolerance" name="tolerance" value="1e-6">
+            <br><br>
+            <label for="max_iterations">Max Iterations:</label>
+            <input type="text" id="max_iterations" name="max_iterations" value="100">
+            <br><br>
+            <label for="method">Method:</label>
+            <select id="method" name="method" onchange="showAdditionalFields()">
+                <option value="Newton">Newton's Method</option>
+                <option value="Bisection">Bisection Method</option>
+                <option value="Secant">Secant Method</option>
+            </select>
+            <br><br>
+            <div id="method_fields"></div>
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+        <div class="result-container">
+            {% if solution %}
+            <h2 class="sol">Solution:</h2>
+            <p>{{ solution }}</p>
+            <h2 class="sol">Iterations:</h2>
+            <p>{{ num_iterations }}</p>
+        </div>
+    </div>
+
+    <div class="other-content">
+        <h2 class="graph">Graph:</h2>
+        <img src="data:image/png;base64,{{ graph_data }}" alt="Graph">
+        <h2 class="graph">Errors:</h2>
+        <table>
+            <tr>
+                <th>Iteration</th>
+                <th>Deviation</th>
+            </tr>
+            {% for error in errors %}
+            <tr>
+                <td>{{ error[0] }}</td>
+                <td>{{ error[1] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+    var username = "{{ username }}";
+    var solution = "{{ solution }}";
+    var equation = "{{ equation }}";
+    var method = "{{ method }}";
+
+    if (username) {
+        localStorage.setItem('username', username);
+        console.log('username stored in localStorage:', username);
+    } else {
+        console.error('username is empty or undefined.');
+    }
+
+    function removeEmail() {
+        localStorage.removeItem('username');
+        console.log('Email removed from localStorage.');
+        window.location.href = "{{ url_for('home') }}";
+    }
+ document.addEventListener('DOMContentLoaded', function () {
+        var storedEmail = localStorage.getItem('username');
+        var userEmailDisplay = document.getElementById('userEmailDisplay');
+        userEmailDisplay.innerHTML = 'Hi, ' + storedEmail
+    });
+</script>
+<script>
+    function showAdditionalFields() {
+        var method = document.getElementById("method").value;
+        var methodFields = document.getElementById("method_fields");
+        methodFields.innerHTML = "";
+
+        if (method === "Bisection") {
+            var rangeFields = document.createElement("div");
+            rangeFields.innerHTML = `
+                <label for="a">Range (a):</label>
+                <input type="text" id="a" name="a" value="-10">
+                <br><br>
+                <label for="b">Range (b):</label>
+                <input type="text" id="b" name="b" value="10">
+            `;
+            methodFields.appendChild(rangeFields);
+        } else if (method === "Secant") {
+            var guessFields = document.createElement("div");
+            guessFields.innerHTML = `
+                <label for="x0">Initial Guess (x0):</label>
+                <input type="text" id="x0" name="x0" value="-10">
+                <br><br>
+                <label for="x1">Initial Guess (x1):</label>
+                <input type="text" id="x1" name="x1" value="10">
+            `;
+            methodFields.appendChild(guessFields);
+        }
+    }
+   function scrollToBottom() {
+const scrollHeight = document.body.scrollHeight;
+const initialScrollTop = window.scrollY;
+const step = Math.PI / (200); // Adjust the divisor for speed
+let count = 0, curPos;
+
+function scrollStep() {
+    curPos = initialScrollTop + (scrollHeight - initialScrollTop) * 0.5 * (1 - Math.cos(count));
+    window.scrollTo(0, curPos);
+
+    if (curPos < scrollHeight) {
+        count += step;
+        requestAnimationFrame(scrollStep);
+    }
+}
+
+requestAnimationFrame(scrollStep);
+}
+    document.addEventListener('DOMContentLoaded', function () {
+var userEmailDisplay = document.getElementById('userEmailDisplay');
+userEmailDisplay.addEventListener('click', function () {
+    window.location.href = "/user_history";
+});
+});
+</script>
+
+</body>
+</html>
